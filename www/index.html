@@ -1,45 +1,169 @@
-<!DOCTYPE html>
+
 <html>
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width">
-    <title></title>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width">
+  <title></title>
 
-    <link rel="manifest" href="manifest.json">
+  <link rel="manifest" href="manifest.json">
 
-    <!-- un-comment this code to enable service worker
-    <script>
-      if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('service-worker.js')
-          .then(() => console.log('service worker installed'))
-          .catch(err => console.log('Error', err));
-      }
-    </script>-->
 
-    <link href="lib/ionic/css/ionic.css" rel="stylesheet">
-    <link href="css/style.css" rel="stylesheet">
 
-    <!-- IF using Sass (run gulp sass first), then uncomment below and remove the CSS includes above
-    <link href="css/ionic.app.css" rel="stylesheet">
-    -->
+  <link href="lib/ionic/css/ionic.css" rel="stylesheet">
 
-    <!-- ionic/angularjs js -->
-    <script src="lib/ionic/js/ionic.bundle.js"></script>
+<!-- IF using Sass (run gulp sass first), then uncomment below and remove the CSS includes above
+<link href="css/ionic.app.css" rel="stylesheet">
+-->
 
-    <!-- cordova script (this will be a 404 during development) -->
-    <script src="cordova.js"></script>
+<!-- ionic/angularjs js -->
+<script src="lib/ionic/js/ionic.bundle.js"></script>
 
-    <!-- your app's js -->
-    <script src="js/app.js"></script>
-  </head>
-  <body ng-app="starter">
+<!-- cordova script (this will be a 404 during development) -->
+<script src="cordova.js"></script>
 
-    <ion-pane>
-      <ion-header-bar class="bar-stable">
-        <h1 class="title">Ionic Blank Starter</h1>
-      </ion-header-bar>
-      <ion-content>
-      </ion-content>
-    </ion-pane>
-  </body>
+<!-- your app's js -->
+<script src="js/app.js"></script>
+
+<!-- 
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"> -->
+  <!-- <meta name="viewport" content="width=device-width"> -->
+  <script src="js/libs/jquery-1.11.3.min.js"></script>
+  <script src="js/libs/bootstrap.min.js"></script>
+  <!-- <link rel="stylesheet" href="css/bootstrap.min.css"> -->
+  <script src="js/libs/angular.min.js"></script>
+
+  <script src="js/data.js"></script>
+  <script src="js/controllers.js"></script>
+  <script src="js/filters.js"></script>
+  <script type="text/javascript" src="js/SocialSharing.js"></script>
+<style type="text/css">
+/*
+.margin_left_60 {
+margin-left: 60px !important;
+}
+
+.margin_bottom_60 {
+margin-bottom: 40px !important;
+}*/
+
+input.valide {
+  color: blue !important;
+
+  border-bottom: 1px solid black;
+}
+
+input.error {
+  color: red !important;
+  background: #e0c59f !important;
+  border-bottom: 1px solid black;
+}
+
+input.correct {
+  color: green !important;
+  cursor: not-allowed !important;
+  background: #EBE6DF !important;
+
+  border-bottom: 1px solid black;
+}
+/*
+#wrapper {
+margin-top: 20px;
+}*/
+/*
+.row{
+margin-bottom: 10px;
+}
+*/
+.site-header nav {
+  padding: 22px 30px;
+}
+
+.site-header nav>a {
+  color: #444;
+  margin-right: 1.8em;
+  font-weight: 600;
+  font-size: 15px;
+}
+
+.site-header nav .brand img {
+  height: 40px;
+  margin-top: -2px;
+  vertical-align: middle;
+}
+.centeral{
+  text-align: center !important;
+   margin: auto;
+  display: block;
+}
+
+.nm{
+  border-right: 2px solid #0000004d;
+}
+.btm
+{
+      border-bottom: 3px solid #0000004d;
+}
+.njk{
+     text-align: center !important;
+      background-color: beige;
+}
+.bak{
+    background-color: cadetblue;
+}
+</style>
+
+</head>
+
+<body ng-app="Sudoku" ng-controller="SudokuController" >
+
+<ion-pane>
+  <ion-header-bar class="bar-stable">
+  <div class="row">
+    <div class="col">
+     <h3 >Sudoko</h3>
+    </div>
+    <div class="col" ng-click='share()'>
+     <h3>Share</h3>
+    </div>
+ </div>
+  </ion-header-bar>
+<ion-content class="bak">
+<div class="row">
+    <div ng-repeat="row in rows"  class = "col" style="padding:0px !important; width : 100%; height:100%; border:1px solid black "   ng-class="($index==2 || $index==5)?'nm':'ns'">
+        <div ng-repeat="column in row.columns " style=" width : 100%; height:20px;"  ng-class="($index==2 || $index==5)?'btm':'ns'" class="njk">
+            <input style=" width : 100%; height:100%; " 
+            class="centeral form-control {{ column.class }} {{check(row.id, column.id)}}"
+            type="text" name="cell-{{row.id}}{{column.id}}"
+            value="column.value" ng-model="column.value" type="number"
+            ng-maxlength="1" required
+            ng-click="possibilities(row.id, column.id)"
+            ng-change="{{ getValue(column.value, row.id, column.id) }}">
+        </div>
+    </div>
+</div>
+
+
+<div class="row">
+  <button disabled="disabled" type="button" class="button button-stable button-block" ng-repeat="possibility in currentPossibilities">
+    {{possibility}}
+  </button>
+</div>
+<div class="row">
+  <button class = "button button-stable button-block" ng-click="init()"><i
+    class="icon-repeat"></i> Init
+  </button>
+  <button class="button button-assertive button-block" ng-click="generate()"><i
+    class="icon-random"></i> New
+  </button>
+  <button class="button button-balanced button-block" ng-click="solve()"><i
+    class="icon-ok-sign"></i> Solve
+  </button>
+  <button class="button button-positive button-block" ng-click="clear()"><i
+    class="icon-off"></i> Clear
+  </button>
+</div>
+
+</ion-content>
+</ion-pane>
+</body>
 </html>
